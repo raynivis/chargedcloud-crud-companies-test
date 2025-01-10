@@ -11,7 +11,7 @@ function Footer() {
                         <h6>About</h6>
                         {/*Texto..*/}
                         <p className="text-justify">
-                            This web software was developed as a technical test for Charged Cloud™ to assess the skills of developer Ray Santiago Del Negro. All materials used in this project were created independently and are not intended for profit. For more details on the templates and images utilized, please visit my 
+                            This web software was developed as a technical test for Charged Cloud™ to assess the skills of developer <i> Ray Santiago Del Negro</i>. All materials used in this project were created independently and are not intended for profit. For more details on the templates and images utilized, please visit my 
                             <a href="https://github.com/raynivis/chargedcloud-crud-companies-test" className="link-light link-offset-2 link-underline link-underline-opacity-0" target="_blank"> GitHub repository</a>.
                             
                         </p>
