@@ -4,6 +4,7 @@ import Footer from './components/footer/Footer';
 import Section from './components/section/Section';
 import { BrowserRouter } from 'react-router';
 
+
 function App() {
   return (
     <div className="App">

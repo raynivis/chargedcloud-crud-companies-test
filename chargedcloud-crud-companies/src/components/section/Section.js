@@ -1,5 +1,4 @@
 //Seccao principal do software
-import './Section.css';
 import { Routes, Route } from 'react-router';
 import Home from './home/Home';
 import Register from './register/Register';

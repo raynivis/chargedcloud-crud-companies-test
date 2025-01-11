@@ -1,4 +1,18 @@
-function CheckCNPJ(input) {
+export function mascaraCNPJ(e) {
+    let valor = e.target.value;
+    // Aplica a máscara do . depois do 2° digito do CNPJ
+    valor = valor.replace(/^(\d{2})(\d)/, "$1.$2");
+    // Aplica a máscara do . depois dos o 5° digito do CNPJ
+    valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+    // Aplica a máscara do / depois dos o 8° digito do CNPJ
+    valor = valor.replace(/\.(\d{3})(\d)/, ".$1/$2");
+    // Aplica a máscara do - depois dos o 12° digito do CNPJ
+    valor = valor.replace(/(\d{4})(\d)/, "$1-$2");
+    // Atualiza o valor atual do campo CNPJ
+    e.target.value = valor;
+}
+
+export function validarCNPJ(input) {
     //As condicoes de validacao do CNPJ e o "Algoritmo de Validacao" é creditado no repositorio
     //Eu apenas modelei para meu estilo de programação, mas credito todo o merito ao autor!
 
@@ -14,19 +28,18 @@ function CheckCNPJ(input) {
         return false;
 
     // Validar as DVs
-    tamanho = input.length - 2
-    numeros = input.substring(0, tamanho);
-    digitos = input.substring(tamanho);
+    var tamanho = input.length - 2
+    var numeros = input.substring(0, tamanho);
+    var digitos = input.substring(tamanho);
 
-    soma = 0;
-    pos = tamanho - 7;
-    for (i = tamanho; i >= 1; i--) {
+    var soma = 0;
+    var pos = tamanho - 7;
+    for (var i = tamanho; i >= 1; i--) {
         soma += numeros.charAt(tamanho - i) * pos--;
         if (pos < 2)
             pos = 9;
     }
-    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-
+    var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
     //Verificando a validade do primeiro digito
     if (resultado != digitos.charAt(0))
         return false;
@@ -48,3 +61,5 @@ function CheckCNPJ(input) {
 
     return true;
 }
+
+export default {mascaraCNPJ, validarCNPJ };
