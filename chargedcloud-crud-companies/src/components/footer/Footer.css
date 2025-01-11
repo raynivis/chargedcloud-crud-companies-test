@@ -4,6 +4,7 @@
     font-size: 15px;
     line-height: 24px;
     color: #737373;
+    flex-shrink: 0; /* Garante que o footer não quebre */
 }
 .site-footer hr {
     border-top-color: #bbb;

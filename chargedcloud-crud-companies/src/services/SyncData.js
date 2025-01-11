@@ -1,9 +1,12 @@
 import OfflineDB from "./OfflineDB";
+import CompanyService from "./API/tools/CompanyService";
+
+const service = new CompanyService();
 
 // Função para verificar a disponibilidade da API
 async function checkApiAvailability() {
   try {
-    const response = await fetch("http://localhost:4200/companies?page=1&size=1", {
+    const response = await fetch("http://localhost:4200/companies", {
       method: "GET",
     });
     if (response.ok) {
@@ -19,39 +22,37 @@ async function checkApiAvailability() {
   }
 }
 
-// Função para buscar empresas, considerando o estado de conectividade
-async function fetchCompanies(page = 1, pageSize = 5, callback) {
-  
-  const isApiAvailable = await checkApiAvailability(); // Verifica a disponibilidade da API
+// Função para verificar e concatenar os dados
+async function fetchCompanies() {
+  const apiAvailable = await checkApiAvailability();
 
-  if (isApiAvailable) {
-    // Online: buscar dados do servidor
-    console.log("Você está online.");
-    fetch(`http://localhost:4200/companies?page=${page}&size=${pageSize}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        callback(data.companies || []); // Garante um array mesmo se `data.companies` estiver indefinido
-      })
-      .catch((err) => {
-        console.error("Error fetching online data:", err);
-      });
+  let companies = [];
+
+  if (apiAvailable) {
+    try {
+      const apiCompanies = await service.list();
+      companies = [...apiCompanies]; // Adiciona dados da API
+    } catch (error) {
+      console.error("Error fetching companies from API:", error);
+    }
   } else {
-    // Offline: buscar dados do IndexedDB
-    console.warn("API não está disponível. Utilizando IndexedDB.");
-    OfflineDB.getPaginatedCompanies(page, pageSize, (results) => {
-      if (results && results.length > 0) {
-        callback(results);
-      } else {
-        console.warn("Sem dados disponiveis no IndexedDB.");
-        callback([]);
-      }
-    });
+    console.warn("Usando offline database!");
   }
+
+  try {
+    const localCompanies = await new Promise((resolve, reject) => {
+      OfflineDB.getAllCompanies((data) => {
+        resolve(data);
+      }, (error) => {
+        reject(error);
+      });
+    });
+    companies = [...companies, ...localCompanies]; // Concatena dados locais
+  } catch (error) {
+    console.error("Error fetching companies from IndexedDB:", error);
+  }
+
+  return companies;
 }
 
-export default { fetchCompanies };
+export default { fetchCompanies, checkApiAvailability};
