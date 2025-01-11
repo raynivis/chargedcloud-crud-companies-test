@@ -16,18 +16,12 @@ request.onupgradeneeded = (event) => {
     }
 };
 
-//Função genérica para tratar os erros de request!
-db.onerror = function (event) {
-    alert("Database Offline error: " + event.target.errorCode);
-};
-
 //Em caso de sucesso do Request
 request.onsuccess = (event) => {
     db = event.target.result;
 };
 
 //Funcoes para ajudar a interação no software
-
 // Adicionar Empresa
 function addCompany(company) {
     const transaction = db.transaction(["companies"], "readwrite");
@@ -35,47 +29,79 @@ function addCompany(company) {
     store.add(company);
 }
 
-//
-function getCompany(company, callback){
-  const transaction = db.transaction(["companies"], "readonly");
-  const store = transaction.objectStore("companies");
-  const request = store.get(cnpj);
+//Buscar uma empresa e devolver ela pelo callback
+function getCompany(cnpj, callback) {
+    const transaction = db.transaction(["companies"], "readonly");
+    const store = transaction.objectStore("companies");
+    const request = store.get(cnpj);
 
+    request.onsuccess = () => {
+        if (request.result) {
+            callback(null, request.result); // Chama o callback com os dados encontrados
+        } else {
+            callback("Company not found", null); // Caso não encontre a empresa
+        }
+    };
 }
 
+//Atualizar dados de uma empresa
+function updateCompany(company) {
+    const transaction = db.transaction(["companies"], "readwrite");
+    const store = transaction.objectStore("companies");
+    const request = store.put(company);
+
+    request.onerror = () => {
+        alert("Failed to update company");
+    };
+}
+
+//Apagar Empresa
+function deleteCompany(cnpj, callback) {
+    const transaction = db.transaction(["companies"], "readwrite");
+    const store = transaction.objectStore("companies");
+    const request = store.delete(cnpj);
+  
+    request.onerror = () => {
+        alert("Failed to delete company");
+    };
+  }
+  
+//Paginacao da lista de empresas
 function getPaginatedCompanies(page, pageSize, callback) {
     const transaction = db.transaction(["companies"], "readonly");
     const store = transaction.objectStore("companies");
     const cursorRequest = store.openCursor();
-    
+
     const results = [];
     let currentIndex = 0;
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
-  
+
     cursorRequest.onsuccess = (event) => {
-      const cursor = event.target.result;
-      if (cursor) {
-        if (currentIndex >= start && currentIndex < end) {
-          results.push(cursor.value);
-        }
-        currentIndex++;
-  
-        if (currentIndex < end) {
-          cursor.continue();
+        const cursor = event.target.result;
+        if (cursor) {
+            if (currentIndex >= start && currentIndex < end) {
+                results.push(cursor.value);
+            }
+            currentIndex++;
+
+            if (currentIndex < end) {
+                cursor.continue();
+            } else {
+                callback(results);
+            }
         } else {
-          callback(results);
+            // Sem mais resultados
+            callback(results);
         }
-      } else {
-        // No more results
-        callback(results);
-      }
     };
-  
+
     cursorRequest.onerror = () => {
-      console.error("Error opening cursor for pagination.");
+        console.error("Error opening cursor for pagination.");
     };
 }
-  
+
+export default {getPaginatedCompanies, deleteCompany, updateCompany, getCompany, addCompany};
+
 
 
