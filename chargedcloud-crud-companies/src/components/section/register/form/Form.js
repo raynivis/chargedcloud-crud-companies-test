@@ -1,9 +1,10 @@
 //Componente formulario
 import "./Form.css";
+import React from 'react';
 import CheckCNPJ from "../tools/CheckCNPJ";
 import ToastDanger from "../../../toasts/ToastDanger";
+import ToastSuccess from "../../../toasts/ToastSuccess";
 import { Toast } from "bootstrap";
-import React from 'react';
 import OfflineDB from "../../../../services/OfflineDB";
 import CompanyService from "../../../../services/API/tools/CompanyService";
 import SyncData from "../../../../services/SyncData";
@@ -26,9 +27,11 @@ class Form extends React.Component {
 
         const cnpjInputValue = document.getElementById("CNPJInput").value;
         const cnpjInput = document.getElementById("CNPJInput");
+        //Desativar o botao pra evitar spam de insert
+        const btn = document.getElementById("btnSubmit");
+        btn.disabled = true;
 
         if (CheckCNPJ.validarCNPJ(cnpjInputValue)) {
-            window.scrollTo({ top: 0, behavior: "smooth" });
             const form = event.target;
             const company = {
                 name: form.elements['name'].value,
@@ -45,7 +48,12 @@ class Form extends React.Component {
                 try {
                     const companyService = new CompanyService(); // Instanciar a classe
                     companyService.create(company); // Chamar o método da instância
-                    alert("Empresa adicionada com sucesso!");
+                    const toastElement = document.getElementById("InsertAPI");
+                    const toast = new Toast(toastElement);
+                    form.reset();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    btn.disabled = false;
+                    toast.show();
                 } catch (error) {
                     alert("Erro ao adicionar a empresa. Verifique o console.");
                     console.error("Erro:", error);
@@ -53,11 +61,15 @@ class Form extends React.Component {
             }
             else {
                 OfflineDB.addCompany(company);
-                alert("Company added to IndexedDB!");
-
+                const toastElement = document.getElementById("InsertIndexedDB");
+                const toast = new Toast(toastElement);
+                form.reset();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                btn.disabled = false;
+                toast.show();
             }
         } else {
-            const toastElement = document.getElementById("msgErro");
+            const toastElement = document.getElementById("CnpjFormatError");
             const toast = new Toast(toastElement);
             toast.show();
             cnpjInput.focus();
@@ -68,7 +80,10 @@ class Form extends React.Component {
     render() {
         return (
             <form className="form-horizontal" id="companyForm" onSubmit={this.handleSubmit}>
-                <ToastDanger id="msgErro" mensagem="Invalid CNPJ! Please try typing it again!" />
+                <ToastDanger id="CnpjFormatError" mensagem="Invalid CNPJ! Please try typing it again!" />
+                <ToastSuccess id="InsertAPI" mensagem="API Online: Company added to API!" />
+                <ToastSuccess id="InsertIndexedDB" mensagem="API Offline: Company added to IndexedDB!" />
+
                 <fieldset className="d-flex row justify-content-center">
                     <legend className="mb-5 text-center">Company Info</legend>
                     {/*Campos do formulario da empresa*/}
@@ -94,19 +109,19 @@ class Form extends React.Component {
                                     <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"></path>
                                 </svg>
                             </span>
-                            <input onKeyUp={this.handleCNPJKeyUp} maxlength="18" id="CNPJInput" required type="text" className="form-control" placeholder="00.000.000/0000-00" aria-label="CNPJ" aria-describedby="addon-wrapping" />
+                            <input onKeyUp={this.handleCNPJKeyUp} maxLength="18" id="CNPJInput" required type="text" className="form-control" placeholder="00.000.000/0000-00" aria-label="CNPJ" aria-describedby="addon-wrapping" />
                         </div>
 
                         {/*Extra: Campo do plano solicitado pela empresa*/}
                         <p className="m-1 text-left">Subscription Plan</p>
                         <div className="input-group mb-3">
-                            <label className="input-group-text" for="Plan">
+                            <label className="input-group-text" htmlFor="Plan">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-wallet2" viewBox="0 0 16 16">
                                     <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"></path>
                                 </svg>
                             </label>
                             <select name="plan" className="form-select" id="inputGroupSelectPlan">
-                                <option selected value="Iniciante">Iniciante</option>
+                                <option defaultValue value="Iniciante">Iniciante</option>
                                 <option value="Intermediário">Intermediário</option>
                                 <option value="Premium">Premium</option>
                             </select>
@@ -149,7 +164,7 @@ class Form extends React.Component {
                     </div>
                 </fieldset>
 
-                <button className="btn btn-primary mt-3 ps-4 pe-4 btn-form" type="submit">Submit</button>
+                <button id="btnSubmit" className="btn btn-primary mt-3 ps-4 pe-4 btn-form" type="submit">Submit</button>
             </form>
         );
 
