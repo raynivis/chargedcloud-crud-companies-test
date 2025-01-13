@@ -46,21 +46,27 @@ function addCompany(company) {
 }
 
 //Buscar uma empresa e devolver ela pelo callback
-function getCompany(cnpj, callback) {
-    openDB().then(() => {
-        const transaction = db.transaction(["companies"], "readonly");
-        const store = transaction.objectStore("companies");
-        const request = store.get(cnpj);
+function getCompany(cnpj) {
+    return openDB().then(() => {
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(["companies"], "readonly");
+            const store = transaction.objectStore("companies");
+            const request = store.get(cnpj);
 
-        request.onsuccess = () => {
-            if (request.result) {
-                callback(null, request.result); // Chama o callback com os dados encontrados
-            } else {
-                callback("Company not found", null); // Caso não encontre a empresa
-            }
-        };
+            request.onsuccess = () => {
+                if (request.result) {
+                    resolve(request.result); // Retorna os dados encontrados
+                } else {
+                    reject("Company not found"); // Rejeita caso não encontre a empresa
+                }
+            };
+            request.onerror = () => {
+                reject("Failed to retrieve company"); // Rejeita em caso de erro no request
+            };
+        });
     });
 }
+
 
 //Atualizar dados de uma empresa
 function updateCompany(company) {
