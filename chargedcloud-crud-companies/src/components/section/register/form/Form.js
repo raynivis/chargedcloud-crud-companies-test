@@ -93,13 +93,7 @@ class Form extends React.Component {
     async handleIndexedDBSubmission(company) {
         try {
             // Usando a função OfflineDB.getCompany para buscar pelo CNPJ
-            const existingCompany = await new Promise((resolve, reject) => {
-                OfflineDB.getCompany(company.cnpj, (error, result) => {
-                    if (error) reject(error); // Rejeita caso ocorra um erro ou a empresa não seja encontrada
-                    else resolve(result); // Resolve com a empresa encontrada
-                });
-            });
-
+            const existingCompany = await OfflineDB.getCompany(company.cnpj);
             // Se o CNPJ já existe, exibe a mensagem de aviso
             if (existingCompany) {
                 this.showToast("ExistingCNPJ");

@@ -8,7 +8,7 @@ class EditModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isSubmitting: false, 
+            isSubmitting: false,
             company: { ...props.company },
         };
 
@@ -35,10 +35,10 @@ class EditModal extends React.Component {
     };
 
     handleSubmit = async (event, cnpj) => {
-        event.preventDefault(); // Prevenir o comportamento padrão do formulário
-    
+        event.preventDefault(); 
+
         this.setState({ isSubmitting: true });
-    
+
         // Obter os dados atualizados do formulário
         const formData = new FormData(event.target);
         const updatedCompany = {
@@ -49,30 +49,55 @@ class EditModal extends React.Component {
             email: formData.get("email"),
             address: formData.get("address"),
         };
-    
+
         try {
             const apiAvailable = await SyncData.checkApiAvailability();
-    
+
             if (apiAvailable) {
-                const companyService = new CompanyService();
-                await companyService.update(cnpj, updatedCompany); // Atualizar na API
-                //Verificar se tem uma empresa com esse cnpj
-                const companyInIndexedDB = await OfflineDB.getCompany(updatedCompany.cnpj)
-                if(companyInIndexedDB)
-                    await OfflineDB.updateCompany(updatedCompany); // Atualizar no IndexedDB
+                let companyInIndexedDB = null;
+
+                // Tentar buscar no IndexedDB
+                try {
+                    companyInIndexedDB = await OfflineDB.getCompany(updatedCompany.cnpj);
+                } catch (error) {
+                    console.warn("Empresa não encontrada no IndexedDB:", error);
+                }
+
+                // Atualizar no IndexedDB, se a empresa foi encontrada
+                if (companyInIndexedDB) {
+                    try {
+                        await OfflineDB.updateCompany(updatedCompany);
+                    } catch (error) {
+                        console.error("Erro ao atualizar no IndexedDB:", error);
+                    }
+                }
+
+                // Atualizar na API
+                try {
+                    const companyService = new CompanyService();
+                    await companyService.update(cnpj, updatedCompany);
+                } catch (error) {
+                    console.error("Erro ao atualizar na API:", error);
+                }
             } else {
-                await OfflineDB.updateCompany(updatedCompany); // Atualizar no IndexedDB
+                // Atualizar no IndexedDB mesmo se a API não estiver disponível
+                try {
+                    await OfflineDB.updateCompany(updatedCompany);
+                } catch (error) {
+                    console.error("Erro ao atualizar no IndexedDB offline:", error);
+                }
             }
         } catch (error) {
-            console.error("Erro ao atualizar a empresa:", error);
+            console.error("Erro inesperado durante a atualização:", error);
         } finally {
             this.setState({ isSubmitting: false });
             const { reloadData, onClose } = this.props;
             reloadData(); // Recarregar os dados do componente pai
-            onClose(); // Fechar o modal
+            onClose(); 
         }
+
     };
-    
+
 
     render() {
         const { onClose } = this.props;
@@ -91,7 +116,7 @@ class EditModal extends React.Component {
                         </div>
                         <div className="modal-body">
                             <div className="container">
-                            <form className="form-horizontal" id="companyForm" onSubmit={(event) => this.handleSubmit(event, company.cnpj)}>
+                                <form className="form-horizontal" id="companyForm" onSubmit={(event) => this.handleSubmit(event, company.cnpj)}>
                                     <fieldset className="d-flex row justify-content-center">
                                         {/*Campos do formulario da empresa*/}
                                         <div className="container">
