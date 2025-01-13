@@ -1,10 +1,10 @@
-//Auxiliar a comunicação entre o back-end e front-end
+//Auxiliar a comunicação entre o back-end (API) e front-end
 export default class CompanyService {
   constructor() {
-    this.API = "http://localhost:4200/companies"; // URL base API
+    this.API = "http://localhost:4200/companies"; // URL base da API
   }
 
-  // Método para listar todas as empresas
+  //Metodo para listar todas as empresas
   list() {
     return fetch(this.API)
       .then((res) => {
@@ -20,7 +20,7 @@ export default class CompanyService {
       });
   }
 
-  // Método para buscar uma empresa pelo CNPJ
+  //Metodo para buscar uma empresa pelo CNPJ
   getByCNPJ(cnpj) {
     // Codifica o CNPJ antes de enviá-lo na URL
     const encodedCNPJ = encodeURIComponent(cnpj);
@@ -38,7 +38,7 @@ export default class CompanyService {
   }
 
 
-  // Método para adicionar uma nova empresa
+  //Metodo para adicionar uma nova empresa
   create(company) {
     return fetch(this.API, {
       method: "POST",
@@ -57,7 +57,7 @@ export default class CompanyService {
       });
   }
 
-  // Método para atualizar uma empresa pelo CNPJ
+  //Metodo para atualizar uma empresa pelo CNPJ
   update(cnpj, updates) {
     const encodedCNPJ = encodeURIComponent(cnpj);
     return fetch(`${this.API}/${encodedCNPJ}`, {
@@ -78,7 +78,7 @@ export default class CompanyService {
   }
 
 
-  // Método para deletar uma empresa pelo CNPJ
+  //Metodo para deletar uma empresa pelo CNPJ
   delete(cnpj) {
     const encodedCNPJ = encodeURIComponent(cnpj);
     return fetch(`${this.API}/${encodedCNPJ}`, { method: "DELETE" })

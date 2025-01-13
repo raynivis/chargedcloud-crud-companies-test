@@ -10,15 +10,15 @@ class DeleteModal extends React.Component {
         this.state = {
             isDeleting: false, // Estado para controlar o botão
         };
-        
+
     }
 
     async DeleteCompany(cnpj) {
         const { onClose, reloadData } = this.props; // Recebendo a função de recarregar
+        //Desativar o botao pra evitar spam de deletes
         this.setState({ isDeleting: true });
         const apiAvailable = await SyncData.checkApiAvailability();
 
-        //Desativar o botao pra evitar spam de deletes
 
         if (apiAvailable) {
             try {
@@ -37,7 +37,7 @@ class DeleteModal extends React.Component {
         else {
             OfflineDB.deleteCompany(cnpj);
         }
-        
+
         this.setState({ isDeleting: false });
         reloadData(); // Recarregando o componente pai
         onClose(); // Fechando o modal

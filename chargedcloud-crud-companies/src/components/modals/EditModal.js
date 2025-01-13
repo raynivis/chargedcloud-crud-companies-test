@@ -3,12 +3,12 @@ import SyncData from '../../services/SyncData';
 import CompanyService from '../../services/API/tools/CompanyService';
 import OfflineDB from '../../services/OfflineDB';
 
-
+//Os codigos de formulario ficaram muito grandes e eu nao consegui modularizar
 class EditModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isSubmitting: false, // Estado para controlar o botão de envio
+            isSubmitting: false, 
             company: { ...props.company },
         };
 
@@ -20,7 +20,7 @@ class EditModal extends React.Component {
             this.modalRef.current.style.display = 'none';
         }
         const { onClose } = this.props;
-        onClose(); // Garante que a função de fechar passada por props seja chamada
+        onClose(); // Garantindo que a função de fechar passada por props seja chamada
     };
 
     // Manipulador genérico para atualização de campo
@@ -150,7 +150,7 @@ class EditModal extends React.Component {
                                                 />
                                             </div>
 
-                                            {/*Extra: Campo do e-mail da empresa*/}
+                                            {/*Campo do e-mail da empresa*/}
                                             <p className="m-1 text-left">E-mail </p>
                                             <div className="input-group flex-nowrap">
                                                 <span className="input-group-text" id="addon-wrapping">

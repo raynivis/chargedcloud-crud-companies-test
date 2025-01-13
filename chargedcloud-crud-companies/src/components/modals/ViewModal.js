@@ -6,6 +6,7 @@ class ViewModal extends React.Component {
         this.modalRef = React.createRef();
     }
 
+    //Fechar o modal
     handleClose = () => {
         if (this.modalRef.current) {
             this.modalRef.current.style.display = 'none';

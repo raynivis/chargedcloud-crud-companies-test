@@ -27,7 +27,7 @@ const saveDatabase = (data) => {
 let companies = loadDatabase();
 
 // Endpoints da API
-// Listagem
+// Listagem de empresa/s
 app.get("/companies", (req, res) => {
     res.json({
         total: companies.length,
@@ -52,7 +52,7 @@ app.get("/companies/:cnpj", (req, res) => {
 });
 
 
-// Adicionar uma empresa ao DataBase
+// Adicionar uma empresa 
 app.post("/companies", (req, res) => {
     const company = req.body;
     companies.push(company);
@@ -60,7 +60,7 @@ app.post("/companies", (req, res) => {
     res.status(201).json(company);
 });
 
-// Editar empresa
+// Editar uma empresa
 app.put("/companies/:cnpj", (req, res) => {
     const { cnpj } = req.params;
     // Remove caracteres especiais (como ".", "/", "-") do CNPJ da URL
@@ -78,7 +78,7 @@ app.put("/companies/:cnpj", (req, res) => {
 });
 
 
-// Excluir empresa
+// Excluir uma empresa
 app.delete("/companies/:cnpj", (req, res) => {
     const { cnpj } = req.params;
         // Remove caracteres especiais (como ".", "/", "-") do CNPJ da URL

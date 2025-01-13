@@ -2,6 +2,7 @@
 var db;
 const request = indexedDB.open("ChargeCloudDB", 1);
 
+//Funcao para abrir o DataBase do IndexedDB
 function openDB() {
     return new Promise((resolve, reject) => {
         if (db) {
@@ -33,7 +34,8 @@ function openDB() {
     });
 }
 
-//Funcoes para ajudar a interação no software
+//Funcoes para ajudar a interação no software:
+
 // Adicionar Empresa
 function addCompany(company) {
     openDB().then(() => {
