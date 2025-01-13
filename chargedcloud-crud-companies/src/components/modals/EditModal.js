@@ -56,7 +56,10 @@ class EditModal extends React.Component {
             if (apiAvailable) {
                 const companyService = new CompanyService();
                 await companyService.update(cnpj, updatedCompany); // Atualizar na API
-                await OfflineDB.updateCompany(updatedCompany); // Atualizar no IndexedDB
+                //Verificar se tem uma empresa com esse cnpj
+                const companyInIndexedDB = await OfflineDB.getCompany(updatedCompany.cnpj)
+                if(companyInIndexedDB)
+                    await OfflineDB.updateCompany(updatedCompany); // Atualizar no IndexedDB
             } else {
                 await OfflineDB.updateCompany(updatedCompany); // Atualizar no IndexedDB
             }
