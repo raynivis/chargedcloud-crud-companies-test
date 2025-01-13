@@ -38,7 +38,11 @@ app.get("/companies", (req, res) => {
 // Buscar empresa pelo CNPJ
 app.get("/companies/:cnpj", (req, res) => {
     const { cnpj } = req.params;
-    const company = companies.find((c) => c.cnpj == cnpj);
+    // Remove caracteres especiais (como ".", "/", "-") do CNPJ da URL
+    const normalizedCNPJ = decodeURIComponent(cnpj).replace(/[^\d]/g, "");
+
+    // Busca com o CNPJ também normalizado
+    const company = companies.find((c) => c.cnpj.replace(/[^\d]/g, "") === normalizedCNPJ);
 
     if (company) {
         res.json(company);
@@ -46,6 +50,7 @@ app.get("/companies/:cnpj", (req, res) => {
         res.status(404).send("Company not found");
     }
 });
+
 
 // Adicionar uma empresa ao DataBase
 app.post("/companies", (req, res) => {
@@ -58,7 +63,10 @@ app.post("/companies", (req, res) => {
 // Editar empresa
 app.put("/companies/:cnpj", (req, res) => {
     const { cnpj } = req.params;
-    const index = companies.findIndex((c) => c.cnpj == cnpj);
+    // Remove caracteres especiais (como ".", "/", "-") do CNPJ da URL
+    const normalizedCNPJ = decodeURIComponent(cnpj).replace(/[^\d]/g, "");
+
+    const index = companies.findIndex((c) => c.cnpj.replace(/[^\d]/g, "") === normalizedCNPJ);
 
     if (index !== -1) {
         companies[index] = { ...companies[index], ...req.body };
@@ -69,13 +77,23 @@ app.put("/companies/:cnpj", (req, res) => {
     }
 });
 
+
 // Excluir empresa
 app.delete("/companies/:cnpj", (req, res) => {
     const { cnpj } = req.params;
-    companies = companies.filter((c) => c.cnpj != cnpj);
-    saveDatabase(companies);
-    res.status(204).send();
+        // Remove caracteres especiais (como ".", "/", "-") do CNPJ da URL
+    const normalizedCNPJ = decodeURIComponent(cnpj).replace(/[^\d]/g, "");
+
+    const filteredCompanies = companies.filter((c) => c.cnpj.replace(/[^\d]/g, "") !== normalizedCNPJ);
+    if (filteredCompanies.length !== companies.length) {
+        companies = filteredCompanies;
+        saveDatabase(companies);
+        res.status(204).send();
+    } else {
+        res.status(404).send("Company not found");
+    }
 });
+
 
 // Iniciar o servidor
 app.listen(4200, () => console.log("API running on http://localhost:4200"));

@@ -27,11 +27,11 @@ class Home extends React.Component {
       <article className="container-xl">
         {apiOnline ? (
           <span className="badge bg-success rounded-pill text-left float-end">
-            API: Online
+            API
           </span>
         ) : (
           <span className="badge bg-danger rounded-pill text-left float-end">
-            API: Offline
+            API
           </span>
         )}
         <div className="table-responsive">

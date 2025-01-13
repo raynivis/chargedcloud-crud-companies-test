@@ -10,14 +10,12 @@ async function checkApiAvailability() {
       method: "GET",
     });
     if (response.ok) {
-      console.log("API is available.");
       return true;
     } else {
       console.warn(`API returned a non-OK status: ${response.status}`);
       return false;
     }
   } catch (error) {
-    console.error("API is not reachable:", error);
     return false;
   }
 }

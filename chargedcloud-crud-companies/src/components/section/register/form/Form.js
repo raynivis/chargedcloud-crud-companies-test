@@ -25,56 +25,96 @@ class Form extends React.Component {
     async handleSubmit(event) {
         event.preventDefault();
 
-        const cnpjInputValue = document.getElementById("CNPJInput").value;
-        const cnpjInput = document.getElementById("CNPJInput");
-        //Desativar o botao pra evitar spam de insert
+        const form = event.target;
         const btn = document.getElementById("btnSubmit");
-        btn.disabled = true;
+        btn.disabled = true; // Desativar o botão
 
-        if (CheckCNPJ.validarCNPJ(cnpjInputValue)) {
-            const form = event.target;
-            const company = {
-                name: form.elements['name'].value,
-                cnpj: cnpjInputValue,
-                plan: form.elements['plan'].value,
-                phone: form.elements['phone'].value,
-                email: form.elements['email'].value,
-                address: form.elements['address'].value,
-            };
+        const cnpjInput = document.getElementById("CNPJInput");
+        const cnpjValue = cnpjInput.value;
 
-            const apiAvailable = await SyncData.checkApiAvailability();
-
-            if (apiAvailable) {
-                try {
-                    const companyService = new CompanyService(); // Instanciar a classe
-                    companyService.create(company); // Chamar o método da instância
-                    const toastElement = document.getElementById("InsertAPI");
-                    const toast = new Toast(toastElement);
-                    form.reset();
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                    btn.disabled = false;
-                    toast.show();
-                } catch (error) {
-                    alert("Erro ao adicionar a empresa. Verifique o console.");
-                    console.error("Erro:", error);
-                }
-            }
-            else {
-                OfflineDB.addCompany(company);
-                const toastElement = document.getElementById("InsertIndexedDB");
-                const toast = new Toast(toastElement);
-                form.reset();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                btn.disabled = false;
-                toast.show();
-            }
-        } else {
-            const toastElement = document.getElementById("CnpjFormatError");
-            const toast = new Toast(toastElement);
-            toast.show();
+        if (!CheckCNPJ.validarCNPJ(cnpjValue)) {
+            this.showToast("CnpjFormatError");
             cnpjInput.focus();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            btn.disabled = false; // Reativar o botão
+            window.scrollTo({ top: 0, behavior: "smooth" }); // Levar a página ao topo
+            return;
         }
+
+        const company = {
+            name: form.elements["name"].value,
+            cnpj: cnpjValue,
+            plan: form.elements["plan"].value,
+            phone: form.elements["phone"].value,
+            email: form.elements["email"].value,
+            address: form.elements["address"].value,
+        };
+
+        try {
+            const apiAvailable = await SyncData.checkApiAvailability();
+            if (apiAvailable) {
+                await this.handleAPISubmission(company);
+            } else {
+                this.handleIndexedDBSubmission(company);
+            }
+            form.reset(); // Limpar o formulário
+            window.scrollTo({ top: 0, behavior: "smooth" }); // Levar a página ao topo
+        } catch (error) {
+            console.error("Erro no envio do formulário:", error);
+        } finally {
+            btn.disabled = false; // Reativar o botão
+        }
+    }
+
+    async handleAPISubmission(company) {
+        const companyService = new CompanyService();
+        try {
+            const existingCompany = await companyService.getByCNPJ(company.cnpj);
+            if (existingCompany) {
+                this.showToast("ExistingCNPJ");
+                return;
+            }
+        } catch (error) {
+            if (error.message === "Company not found.") {
+                // Se o CNPJ não for encontrado, criar novo registro
+                await companyService.create(company);
+                this.showToast("InsertAPI");
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    async handleIndexedDBSubmission(company) {
+        try {
+            // Usando a função OfflineDB.getCompany para buscar pelo CNPJ
+            const existingCompany = await new Promise((resolve, reject) => {
+                OfflineDB.getCompany(company.cnpj, (error, result) => {
+                    if (error) reject(error); // Rejeita caso ocorra um erro ou a empresa não seja encontrada
+                    else resolve(result); // Resolve com a empresa encontrada
+                });
+            });
+
+            // Se o CNPJ já existe, exibe a mensagem de aviso
+            if (existingCompany) {
+                this.showToast("ExistingCNPJ");
+                return;
+            }
+        } catch (error) {
+            // Se a empresa não for encontrada (error = "Company not found"), adiciona
+            if (error === "Company not found") {
+                OfflineDB.addCompany(company);
+                this.showToast("InsertIndexedDB");
+            } else {
+                console.error("Error accessing IndexedDB:", error);
+                throw error;
+            }
+        }
+    }
+
+    showToast(toastId) {
+        const toastElement = document.getElementById(toastId);
+        const toast = new Toast(toastElement);
+        toast.show();
     }
 
     render() {
@@ -83,6 +123,7 @@ class Form extends React.Component {
                 <ToastDanger id="CnpjFormatError" mensagem="Invalid CNPJ! Please try typing it again!" />
                 <ToastSuccess id="InsertAPI" mensagem="API Online: Company added to API!" />
                 <ToastSuccess id="InsertIndexedDB" mensagem="API Offline: Company added to IndexedDB!" />
+                <ToastDanger id="ExistingCNPJ" mensagem="The provided CNPJ already exists in our database!" />
 
                 <fieldset className="d-flex row justify-content-center">
                     <legend className="mb-5 text-center">Company Info</legend>
