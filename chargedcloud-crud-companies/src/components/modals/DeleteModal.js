@@ -10,15 +10,15 @@ class DeleteModal extends React.Component {
         this.state = {
             isDeleting: false, // Estado para controlar o botão
         };
-        
+
     }
 
     async DeleteCompany(cnpj) {
         const { onClose, reloadData } = this.props; // Recebendo a função de recarregar
+        //Desativar o botao pra evitar spam de deletes
         this.setState({ isDeleting: true });
         const apiAvailable = await SyncData.checkApiAvailability();
 
-        //Desativar o botao pra evitar spam de deletes
 
         if (apiAvailable) {
             try {
@@ -37,7 +37,7 @@ class DeleteModal extends React.Component {
         else {
             OfflineDB.deleteCompany(cnpj);
         }
-        
+
         this.setState({ isDeleting: false });
         reloadData(); // Recarregando o componente pai
         onClose(); // Fechando o modal
@@ -52,7 +52,7 @@ class DeleteModal extends React.Component {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h6 className="modal-title d-flex align-items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#E34724"><path d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e74c3c"><path d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z" />
                                 </svg>
                                 Delete Company Information
                             </h6>

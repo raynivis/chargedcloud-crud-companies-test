@@ -6,6 +6,7 @@ import Register from './register/Register';
 function Section() {
     return (
         <section className="container-fluid d-flex justify-content-center">
+            {/*Rotas*/}
             <Routes>
                 <Route path="/" index element={<Home />}></Route>
                 <Route path="/register" element={<Register />}></Route>

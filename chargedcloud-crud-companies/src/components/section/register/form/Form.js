@@ -9,7 +9,7 @@ import OfflineDB from "../../../../services/OfflineDB";
 import CompanyService from "../../../../services/API/tools/CompanyService";
 import SyncData from "../../../../services/SyncData";
 
-
+//Os codigos de formulario ficaram muito grandes e eu nao consegui modularizar
 class Form extends React.Component {
 
     constructor(props) {
@@ -18,10 +18,12 @@ class Form extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    //Evento de aplicacao da mascara
     handleCNPJKeyUp(event) {
         CheckCNPJ.mascaraCNPJ(event);
     }
 
+    //Envio dos dados
     async handleSubmit(event) {
         event.preventDefault();
 
@@ -32,6 +34,7 @@ class Form extends React.Component {
         const cnpjInput = document.getElementById("CNPJInput");
         const cnpjValue = cnpjInput.value;
 
+        //Verificar a validade do CNPJ para o insert
         if (!CheckCNPJ.validarCNPJ(cnpjValue)) {
             this.showToast("CnpjFormatError");
             cnpjInput.focus();
@@ -51,6 +54,7 @@ class Form extends React.Component {
 
         try {
             const apiAvailable = await SyncData.checkApiAvailability();
+            //Se a API estiver disponivel, a adicao é na API, se nao a adicao é no IndexedDB
             if (apiAvailable) {
                 await this.handleAPISubmission(company);
             } else {
@@ -65,6 +69,7 @@ class Form extends React.Component {
         }
     }
 
+    //Metodo para adicionar na API
     async handleAPISubmission(company) {
         const companyService = new CompanyService();
         try {
@@ -84,6 +89,7 @@ class Form extends React.Component {
         }
     }
 
+    //Metodo para adicionar no IndexedDB
     async handleIndexedDBSubmission(company) {
         try {
             // Usando a função OfflineDB.getCompany para buscar pelo CNPJ
@@ -111,6 +117,7 @@ class Form extends React.Component {
         }
     }
 
+    //Mostrar o toast
     showToast(toastId) {
         const toastElement = document.getElementById(toastId);
         const toast = new Toast(toastElement);

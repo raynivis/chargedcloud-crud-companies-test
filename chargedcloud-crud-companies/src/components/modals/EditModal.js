@@ -3,12 +3,12 @@ import SyncData from '../../services/SyncData';
 import CompanyService from '../../services/API/tools/CompanyService';
 import OfflineDB from '../../services/OfflineDB';
 
-
+//Os codigos de formulario ficaram muito grandes e eu nao consegui modularizar
 class EditModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isSubmitting: false, // Estado para controlar o botão de envio
+            isSubmitting: false, 
             company: { ...props.company },
         };
 
@@ -20,7 +20,7 @@ class EditModal extends React.Component {
             this.modalRef.current.style.display = 'none';
         }
         const { onClose } = this.props;
-        onClose(); // Garante que a função de fechar passada por props seja chamada
+        onClose(); // Garantindo que a função de fechar passada por props seja chamada
     };
 
     // Manipulador genérico para atualização de campo
@@ -81,7 +81,7 @@ class EditModal extends React.Component {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h6 className="modal-title d-flex align-items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFC107"><path d="M216-216h51l375-375-51-51-375 375v51Zm-72 72v-153l498-498q11-11 23.84-16 12.83-5 27-5 14.16 0 27.16 5t24 16l51 51q11 11 16 24t5 26.54q0 14.45-5.02 27.54T795-642L297-144H144Zm600-549-51-51 51 51Zm-127.95 76.95L591-642l51 51-25.95-25.05Z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#d4ac0d"><path d="M216-216h51l375-375-51-51-375 375v51Zm-72 72v-153l498-498q11-11 23.84-16 12.83-5 27-5 14.16 0 27.16 5t24 16l51 51q11 11 16 24t5 26.54q0 14.45-5.02 27.54T795-642L297-144H144Zm600-549-51-51 51 51Zm-127.95 76.95L591-642l51 51-25.95-25.05Z" />
                                 </svg>
                                 Edit Company Information
                             </h6>
@@ -90,7 +90,6 @@ class EditModal extends React.Component {
                             <div className="container">
                             <form className="form-horizontal" id="companyForm" onSubmit={(event) => this.handleSubmit(event, company.cnpj)}>
                                     <fieldset className="d-flex row justify-content-center">
-                                        <legend className="mb-5 text-center">Company Info</legend>
                                         {/*Campos do formulario da empresa*/}
                                         <div className="container">
                                             {/*Campo do nome da empresa*/}
@@ -151,7 +150,7 @@ class EditModal extends React.Component {
                                                 />
                                             </div>
 
-                                            {/*Extra: Campo do e-mail da empresa*/}
+                                            {/*Campo do e-mail da empresa*/}
                                             <p className="m-1 text-left">E-mail </p>
                                             <div className="input-group flex-nowrap">
                                                 <span className="input-group-text" id="addon-wrapping">
@@ -195,7 +194,7 @@ class EditModal extends React.Component {
                                     </fieldset>
                                     <button
                                         id="btnSubmit"
-                                        className="btn btn-primary mt-3 ps-4 pe-4 btn-form"
+                                        className="btn btn-primary mt-3 ps-4 pe-4  btn-form"
                                         type="submit"
                                         disabled={isSubmitting}
                                     >

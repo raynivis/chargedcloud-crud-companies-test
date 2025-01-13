@@ -3,7 +3,7 @@ import CompanyService from "./API/tools/CompanyService";
 
 const service = new CompanyService();
 
-// Função para verificar a disponibilidade da API
+// Funcao para verificar a disponibilidade da API
 async function checkApiAvailability() {
   try {
     const response = await fetch("http://localhost:4200/companies", {
@@ -20,7 +20,7 @@ async function checkApiAvailability() {
   }
 }
 
-// Função para verificar e concatenar os dados
+// Funcao para verificar e concatenar os dados
 async function fetchCompanies() {
   const apiAvailable = await checkApiAvailability();
 

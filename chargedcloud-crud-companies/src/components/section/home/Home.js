@@ -11,7 +11,9 @@ class Home extends React.Component {
     };
   }
 
+  //Quando o componente for montado
   async componentDidMount() {
+    //Icon para verificar se a API esta ligada
     try {
       const isOnline = await SyncData.checkApiAvailability();
       this.setState({ apiOnline: isOnline });
