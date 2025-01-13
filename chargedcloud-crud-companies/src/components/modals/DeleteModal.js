@@ -21,21 +21,28 @@ class DeleteModal extends React.Component {
 
 
         if (apiAvailable) {
+            // Tenta deletar na API
             try {
                 const companyService = new CompanyService(); // Instanciar a classe
                 companyService.delete(cnpj); // Chamar o método de apagar
                 window.scrollTo({ top: 0, behavior: "smooth" });
             } catch (error) {
-                console.error("Erro na API:", error);
+                console.error("Erro ao deletar na API:", error);
             }
+
+            // Tenta deletar na IndexedDB
             try {
                 OfflineDB.deleteCompany(cnpj);
             } catch (error) {
-                console.error("Erro no IndexedDB:", error);
+                console.error("Erro ao deletar no IndexedDB:", error);
             }
-        }
-        else {
-            OfflineDB.deleteCompany(cnpj);
+        } else {
+            // Tenta deletar no IndexedDB se a API não estiver disponível
+            try {
+                OfflineDB.deleteCompany(cnpj);
+            } catch (error) {
+                console.error("Erro ao deletar no IndexedDB:", error);
+            }
         }
 
         this.setState({ isDeleting: false });

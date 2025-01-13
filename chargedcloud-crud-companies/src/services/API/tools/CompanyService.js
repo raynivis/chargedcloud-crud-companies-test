@@ -67,7 +67,6 @@ export default class CompanyService {
     })
       .then((res) => {
         if (!res.ok) {
-          throw new Error("Failed to update company.");
         }
         return res.json();
       })
@@ -84,7 +83,6 @@ export default class CompanyService {
     return fetch(`${this.API}/${encodedCNPJ}`, { method: "DELETE" })
       .then((res) => {
         if (!res.ok) {
-          throw new Error("Failed to delete company.");
         }
       })
       .catch((err) => {
