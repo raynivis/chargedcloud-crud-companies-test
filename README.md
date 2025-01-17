@@ -4,6 +4,11 @@ Projeto desenvolvido como parte de uma avaliação técnica, com o objetivo de g
 
 O sistema utiliza **React.js** para a interface e uma **API REST** para o backend.  
 
+### ⚠️ Atenção
+
+A aplicação **só funciona em navegadores OperaGX** devido a um erro no **IndexedDB** (minha culpa).  
+
+
 ## 🎥 Demonstração  
 ![gif charged](https://github.com/user-attachments/assets/c02ca2aa-282c-4529-af90-879ae10d68e6)
 
